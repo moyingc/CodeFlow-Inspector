@@ -4,7 +4,7 @@
 
 CodeFlow Inspector 是一款本地优先的**程序分析与代码可视化桌面软件**。它集合静态分析、控制流与数据流分析、软件安全检查、受控运行实验、程序验证和软件数字孪生，将代码项目转换为结构化语义证据。
 
-- [下载最新桌面版本](https://github.com/moyingc/CodeFlow-Inspector/releases/latest)
+- [下载 v0.1.0 Alpha 桌面版本](https://github.com/moyingc/CodeFlow-Inspector/releases/tag/v0.1.0-alpha.1)
 - [详细使用手册](docs/用户使用手册.md)
 - [产品理念与技术介绍](docs/产品理念与技术介绍.md)
 - [语言工具安装指南](docs/语言工具安装指南.md)

@@ -4,7 +4,7 @@ Local-first desktop software for code understanding, semantic graphs, data-flow 
 
 本地优先的桌面代码分析软件，用于代码理解、语义图谱、数据流分析、受控执行、程序验证、安全检查和修复实验。
 
-- [Download / 下载](https://github.com/moyingc/CodeFlow-Inspector/releases/latest)
+- [Download / 下载 v0.1.0 Alpha](https://github.com/moyingc/CodeFlow-Inspector/releases/tag/v0.1.0-alpha.1)
 
 - [中文说明](README.zh-CN.md)
 - [English documentation](README.en-US.md)
