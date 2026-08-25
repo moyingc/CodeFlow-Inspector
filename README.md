@@ -6,6 +6,8 @@ Local-first desktop software for code understanding, semantic graphs, data-flow 
 
 - [中文说明](README.zh-CN.md)
 - [English documentation](README.en-US.md)
+- [语言工具安装指南](docs/语言工具安装指南.md)
+- [Language tool installation guide](docs/Language-Tool-Installation.md)
 
 > Status: Alpha / Research Preview. Use sanitized, non-confidential projects for evaluation.
 

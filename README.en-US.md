@@ -21,7 +21,12 @@ The current release is an **Alpha / Research Preview** intended for sanitized, n
 
 ## Language tooling
 
-Desktop packages include Pyright, JDT LS, clangd, gopls, rust-analyzer, and managed debug adapters. Static analysis does not require a remote model API.
+The application itself installs and starts without third-party language servers, and its baseline static analysis does not require a remote model API. To keep downloads manageable and avoid redistributing large third-party runtimes on their behalf, the current public packages do not bundle Pyright, JDT LS, clangd, gopls, or rust-analyzer.
+
+Tree-sitter and local analysis remain available when these optional tools are missing. Cross-file types, definitions, references, macros, and compiler diagnostics are then explicitly marked as lacking LSP evidence. After installing a tool, restart the desktop application and CodeFlow Inspector will detect it automatically; no source-code changes are required.
+
+- [English language tool installation guide](docs/Language-Tool-Installation.md)
+- [中文语言工具安装指南](docs/语言工具安装指南.md)
 
 Real compilation and execution require the corresponding Node.js, Python, JDK, Rust, or C/C++ toolchain on the host. CodeFlow Inspector detects and certifies compatible tools. It does not connect to the network or install third-party software without explicit user authorization.
 

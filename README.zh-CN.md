@@ -21,7 +21,12 @@ CodeFlow Inspector 是一款本地优先的桌面代码分析软件。它将项�
 
 ## 语言工具
 
-发行包内置 Pyright、JDT LS、clangd、gopls、rust-analyzer 和调试适配组件。静态解析不需要远程大模型 API。
+软件本体可以直接安装和启动，基础静态解析不需要远程大模型 API。为控制安装包体积并避免代替第三方项目分发大型运行时，当前公开安装包不捆绑 Pyright、JDT LS、clangd、gopls 和 rust-analyzer。
+
+缺少这些可选工具时，Tree-sitter 与本地分析仍可工作；跨文件类型、定义、引用、宏和编译诊断会明确标记为缺少 LSP 证据。安装后重启桌面程序，软件会自动检测工具，不需要修改项目源码。
+
+- [中文语言工具安装指南](docs/语言工具安装指南.md)
+- [English language tool installation guide](docs/Language-Tool-Installation.md)
 
 真实编译和执行需要本机存在相应的 Node.js、Python、JDK、Rust 或 C/C++ 工具链。软件会检测版本与能力；在用户明确允许前，不自动联网或安装第三方工具。
 
