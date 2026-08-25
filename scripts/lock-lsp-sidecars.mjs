@@ -1,6 +1,6 @@
 import { createHash } from "node:crypto";
 import { execFileSync } from "node:child_process";
-import { access, chmod, readdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
+import { access, chmod, mkdir, readdir, readFile, stat, unlink, writeFile } from "node:fs/promises";
 import { join, relative, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
@@ -51,6 +51,7 @@ if (missing.length && process.env.CODEFLOW_SIDECAR_ALLOW_PARTIAL !== "1") {
   );
   process.exitCode = 1;
 } else {
+  await mkdir(packageRoot, { recursive: true });
   for (const path of await walk(packageRoot)) {
     if (path.endsWith("checksums.json")) continue;
     files[relative(packageRoot, path).replaceAll("\\", "/")] = await sha256(path);
