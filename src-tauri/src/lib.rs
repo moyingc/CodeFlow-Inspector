@@ -4399,13 +4399,22 @@ fn build_sandbox_plan(command: &str, args: &[String], cwd: &Path) -> SandboxPlan
             .filter(|path| !path.as_os_str().is_empty())
             .map(|path| escape_sandbox_literal(&path.to_string_lossy()))
             .unwrap_or_else(|| "/__codeflow_no_executable_root__".to_string());
+        let developer_root = Command::new("/usr/bin/xcode-select")
+            .arg("-p")
+            .output()
+            .ok()
+            .filter(|output| output.status.success())
+            .and_then(|output| String::from_utf8(output.stdout).ok())
+            .map(|path| escape_sandbox_literal(path.trim()))
+            .filter(|path| !path.is_empty())
+            .unwrap_or_else(|| "/__codeflow_no_developer_root__".to_string());
         let user_text_encoding = std::env::var_os("HOME")
             .map(PathBuf::from)
             .unwrap_or_default()
             .join(".CFUserTextEncoding");
         let user_text_encoding = escape_sandbox_literal(&user_text_encoding.to_string_lossy());
         let profile = format!(
-            "(version 1)\n(deny default)\n(allow process*)\n(allow sysctl-read)\n(allow mach-lookup)\n(allow ipc-posix-shm-read-data (ipc-posix-name \"apple.shm.notification_center\"))\n(allow file-read-metadata)\n(allow file-read* (literal \"/\"))\n(allow file-read* (literal \"/dev/dtracehelper\"))\n(allow file-read* (literal \"/dev/autofs_nowait\"))\n(allow file-read* (literal \"{user_text_encoding}\"))\n(allow file-read* (literal \"{executable}\"))\n(allow file-read* (subpath \"{executable_parent}\"))\n(allow file-read* (subpath \"{executable_root}\"))\n(allow file-read* (subpath \"{root}\"))\n(allow file-read* (subpath \"{canonical_root}\"))\n(allow file-read* (subpath \"/System\"))\n(allow file-read* (subpath \"/usr\"))\n(allow file-read* (subpath \"/bin\"))\n(allow file-read* (subpath \"/sbin\"))\n(allow file-read* (subpath \"/opt/homebrew\"))\n(allow file-read* (subpath \"/Library/Developer\"))\n(allow file-read* (subpath \"/private/var/db/dyld\"))\n(allow file-read* (subpath \"/private/etc/ssl\"))\n(allow file-read* (literal \"/private/etc/hosts\"))\n(allow file-read* (literal \"/private/etc/resolv.conf\"))\n(allow file-write-data (literal \"/dev/dtracehelper\"))\n(allow file-ioctl (literal \"/dev/dtracehelper\"))\n(allow file-write* (subpath \"{root}\"))\n(allow file-write* (subpath \"{canonical_root}\"))\n(deny network*)"
+            "(version 1)\n(deny default)\n(allow process*)\n(allow sysctl-read)\n(allow mach-lookup)\n(allow ipc-posix-shm-read-data (ipc-posix-name \"apple.shm.notification_center\"))\n(allow file-read-metadata)\n(allow file-read* (literal \"/\"))\n(allow file-read* (literal \"/dev/dtracehelper\"))\n(allow file-read* (literal \"/dev/autofs_nowait\"))\n(allow file-read* (literal \"{user_text_encoding}\"))\n(allow file-read* (literal \"{executable}\"))\n(allow file-read* (subpath \"{executable_parent}\"))\n(allow file-read* (subpath \"{executable_root}\"))\n(allow file-read* (subpath \"{developer_root}\"))\n(allow file-read* (subpath \"{root}\"))\n(allow file-read* (subpath \"{canonical_root}\"))\n(allow file-read* (subpath \"/System\"))\n(allow file-read* (subpath \"/usr\"))\n(allow file-read* (subpath \"/bin\"))\n(allow file-read* (subpath \"/sbin\"))\n(allow file-read* (subpath \"/opt/homebrew\"))\n(allow file-read* (subpath \"/Library/Developer\"))\n(allow file-read* (subpath \"/private/var/db/dyld\"))\n(allow file-read* (subpath \"/private/etc/ssl\"))\n(allow file-read* (literal \"/private/etc/hosts\"))\n(allow file-read* (literal \"/private/etc/resolv.conf\"))\n(allow file-write-data (literal \"/dev/dtracehelper\"))\n(allow file-ioctl (literal \"/dev/dtracehelper\"))\n(allow file-write* (subpath \"{root}\"))\n(allow file-write* (subpath \"{canonical_root}\"))\n(deny network*)"
         );
         let mut sandbox_args = vec!["-p".to_string(), profile, resolved_command];
         sandbox_args.extend(args.iter().cloned());

@@ -54,7 +54,7 @@ jobs:
 
       - name: Install macOS build dependencies
         if: runner.os == 'macOS'
-        run: brew install cmake llvm
+        run: brew install cmake llvm node openjdk
 
       - name: Install Windows build dependencies
         if: runner.os == 'Windows'
