@@ -4285,14 +4285,28 @@ fn controlled_runtime_path() -> String {
 fn resolve_runtime_command(command: &str) -> Option<PathBuf> {
     let command_path = Path::new(command);
     if command_path.components().count() > 1 {
-        return command_path
-            .is_file()
-            .then(|| fs::canonicalize(command_path).unwrap_or_else(|_| command_path.to_path_buf()));
+        return command_path.is_file().then(|| command_path.to_path_buf());
     }
-    std::env::split_paths(std::ffi::OsStr::new(&controlled_runtime_path()))
+    let candidate = std::env::split_paths(std::ffi::OsStr::new(&controlled_runtime_path()))
         .map(|directory| directory.join(command))
-        .find(|candidate| candidate.is_file())
-        .map(|candidate| fs::canonicalize(&candidate).unwrap_or(candidate))
+        .find(|candidate| candidate.is_file())?;
+    if command == "rustc" {
+        let output = Command::new(&candidate)
+            .args(["--print", "sysroot"])
+            .env("PATH", controlled_runtime_path())
+            .output()
+            .ok();
+        if let Some(sysroot) = output
+            .filter(|output| output.status.success())
+            .and_then(|output| String::from_utf8(output.stdout).ok())
+        {
+            let compiler = PathBuf::from(sysroot.trim()).join("bin/rustc");
+            if compiler.is_file() {
+                return Some(compiler);
+            }
+        }
+    }
+    Some(candidate)
 }
 
 #[cfg(target_os = "windows")]
@@ -4379,13 +4393,19 @@ fn build_sandbox_plan(command: &str, args: &[String], cwd: &Path) -> SandboxPlan
             .filter(|path| !path.as_os_str().is_empty())
             .map(|path| escape_sandbox_literal(&path.to_string_lossy()))
             .unwrap_or_else(|| "/__codeflow_no_executable_parent__".to_string());
+        let executable_root = Path::new(&resolved_command)
+            .parent()
+            .and_then(Path::parent)
+            .filter(|path| !path.as_os_str().is_empty())
+            .map(|path| escape_sandbox_literal(&path.to_string_lossy()))
+            .unwrap_or_else(|| "/__codeflow_no_executable_root__".to_string());
         let user_text_encoding = std::env::var_os("HOME")
             .map(PathBuf::from)
             .unwrap_or_default()
             .join(".CFUserTextEncoding");
         let user_text_encoding = escape_sandbox_literal(&user_text_encoding.to_string_lossy());
         let profile = format!(
-            "(version 1)\n(deny default)\n(allow process*)\n(allow sysctl-read)\n(allow mach-lookup)\n(allow ipc-posix-shm-read-data (ipc-posix-name \"apple.shm.notification_center\"))\n(allow file-read-metadata)\n(allow file-read* (literal \"/\"))\n(allow file-read* (literal \"/dev/dtracehelper\"))\n(allow file-read* (literal \"/dev/autofs_nowait\"))\n(allow file-read* (literal \"{user_text_encoding}\"))\n(allow file-read* (literal \"{executable}\"))\n(allow file-read* (subpath \"{executable_parent}\"))\n(allow file-read* (subpath \"{root}\"))\n(allow file-read* (subpath \"{canonical_root}\"))\n(allow file-read* (subpath \"/System\"))\n(allow file-read* (subpath \"/usr\"))\n(allow file-read* (subpath \"/bin\"))\n(allow file-read* (subpath \"/sbin\"))\n(allow file-read* (subpath \"/opt/homebrew\"))\n(allow file-read* (subpath \"/Library/Developer\"))\n(allow file-read* (subpath \"/private/var/db/dyld\"))\n(allow file-read* (subpath \"/private/etc/ssl\"))\n(allow file-read* (literal \"/private/etc/hosts\"))\n(allow file-read* (literal \"/private/etc/resolv.conf\"))\n(allow file-write-data (literal \"/dev/dtracehelper\"))\n(allow file-ioctl (literal \"/dev/dtracehelper\"))\n(allow file-write* (subpath \"{root}\"))\n(allow file-write* (subpath \"{canonical_root}\"))\n(deny network*)"
+            "(version 1)\n(deny default)\n(allow process*)\n(allow sysctl-read)\n(allow mach-lookup)\n(allow ipc-posix-shm-read-data (ipc-posix-name \"apple.shm.notification_center\"))\n(allow file-read-metadata)\n(allow file-read* (literal \"/\"))\n(allow file-read* (literal \"/dev/dtracehelper\"))\n(allow file-read* (literal \"/dev/autofs_nowait\"))\n(allow file-read* (literal \"{user_text_encoding}\"))\n(allow file-read* (literal \"{executable}\"))\n(allow file-read* (subpath \"{executable_parent}\"))\n(allow file-read* (subpath \"{executable_root}\"))\n(allow file-read* (subpath \"{root}\"))\n(allow file-read* (subpath \"{canonical_root}\"))\n(allow file-read* (subpath \"/System\"))\n(allow file-read* (subpath \"/usr\"))\n(allow file-read* (subpath \"/bin\"))\n(allow file-read* (subpath \"/sbin\"))\n(allow file-read* (subpath \"/opt/homebrew\"))\n(allow file-read* (subpath \"/Library/Developer\"))\n(allow file-read* (subpath \"/private/var/db/dyld\"))\n(allow file-read* (subpath \"/private/etc/ssl\"))\n(allow file-read* (literal \"/private/etc/hosts\"))\n(allow file-read* (literal \"/private/etc/resolv.conf\"))\n(allow file-write-data (literal \"/dev/dtracehelper\"))\n(allow file-ioctl (literal \"/dev/dtracehelper\"))\n(allow file-write* (subpath \"{root}\"))\n(allow file-write* (subpath \"{canonical_root}\"))\n(deny network*)"
         );
         let mut sandbox_args = vec!["-p".to_string(), profile, resolved_command];
         sandbox_args.extend(args.iter().cloned());
@@ -6798,6 +6818,30 @@ mod tests {
                 assert_eq!(PathBuf::from(tool.command), resolved);
             }
         }
+    }
+
+    #[test]
+    #[cfg(unix)]
+    fn runtime_command_resolution_preserves_multicall_symlink_name() {
+        use std::os::unix::fs::symlink;
+
+        let root = std::env::temp_dir().join(format!(
+            "codeflow-runtime-symlink-{}-{}",
+            std::process::id(),
+            now_ms()
+        ));
+        fs::create_dir_all(&root).expect("create runtime symlink fixture");
+        let link = root.join("rustc");
+        symlink(
+            std::env::current_exe().expect("resolve current test executable"),
+            &link,
+        )
+        .expect("create multicall symlink");
+
+        let resolved = resolve_runtime_command(&link.to_string_lossy())
+            .expect("resolve multicall symlink");
+        assert_eq!(resolved, link);
+        let _ = fs::remove_dir_all(root);
     }
 
     #[test]
