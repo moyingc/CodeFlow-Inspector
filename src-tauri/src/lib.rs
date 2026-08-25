@@ -4401,7 +4401,7 @@ fn build_sandbox_plan(command: &str, args: &[String], cwd: &Path) -> SandboxPlan
     }
     #[cfg(target_os = "linux")]
     {
-        if command_available("bwrap") {
+        if linux_bubblewrap_available() {
             let root = cwd.to_string_lossy().to_string();
             let mut sandbox_args = vec![
                 "--unshare-all".to_string(),
@@ -4441,7 +4441,7 @@ fn build_sandbox_plan(command: &str, args: &[String], cwd: &Path) -> SandboxPlan
         return SandboxPlan {
             kind: "linux_bubblewrap".to_string(),
             status: "unavailable".to_string(),
-            evidence: "bubblewrap is not installed; execution retains timeout and temporary-copy boundaries but has no namespace isolation.".to_string(),
+            evidence: "bubblewrap is missing or the host rejected its namespace capability probe; execution retains timeout and temporary-copy boundaries but has no certified namespace isolation.".to_string(),
             command: command.to_string(),
             args: args.to_vec(),
         };
@@ -4507,6 +4507,33 @@ fn macos_sandbox_available() -> bool {
 fn command_available(command: &str) -> bool {
     Command::new(command)
         .arg("--version")
+        .stdout(Stdio::null())
+        .stderr(Stdio::null())
+        .status()
+        .map(|status| status.success())
+        .unwrap_or(false)
+}
+
+#[cfg(target_os = "linux")]
+fn linux_bubblewrap_available() -> bool {
+    Command::new("bwrap")
+        .args([
+            "--unshare-all",
+            "--unshare-net",
+            "--die-with-parent",
+            "--new-session",
+            "--cap-drop",
+            "ALL",
+            "--ro-bind",
+            "/",
+            "/",
+            "--proc",
+            "/proc",
+            "--dev",
+            "/dev",
+            "--",
+            "/bin/true",
+        ])
         .stdout(Stdio::null())
         .stderr(Stdio::null())
         .status()
@@ -6822,7 +6849,11 @@ mod tests {
 
     #[test]
     fn controlled_runtime_smoke_tests_every_available_language_adapter() {
-        let strict = std::env::var_os("CODEFLOW_CROSS_PLATFORM_CERTIFY").is_some();
+        let require_tools = std::env::var_os("CODEFLOW_CROSS_PLATFORM_CERTIFY").is_some();
+        let require_sandbox = std::env::var_os("CODEFLOW_REQUIRE_OS_SANDBOX").is_some();
+        let mut executed = 0usize;
+        let mut refused = 0usize;
+        let mut unavailable = 0usize;
         let cases = [
             ("node", "main.js", "const fs=require('fs');console.log('CODEFLOW_TRACE {\"functionName\":\"source\",\"event\":\"transfer\",\"dataNames\":[\"input\"],\"from\":\"source\",\"to\":\"sink\"}');fs.writeFileSync('certification-output.txt','ok');console.log('CODEFLOW_TRACE {\"functionName\":\"sink\",\"event\":\"exit\",\"dataNames\":[\"output\"]}');", "JavaScript"),
             ("python", "main.py", "print('CODEFLOW_TRACE {\"functionName\":\"source\",\"event\":\"transfer\",\"dataNames\":[\"input\"],\"from\":\"source\",\"to\":\"sink\"}')\nopen('certification-output.txt','w').write('ok')\nprint('CODEFLOW_TRACE {\"functionName\":\"sink\",\"event\":\"exit\",\"dataNames\":[\"output\"]}')", "Python"),
@@ -6862,9 +6893,10 @@ mod tests {
                 .is_err()
             {
                 assert!(
-                    !strict,
+                    !require_tools,
                     "{language} certification tool {required_tool} is missing"
                 );
+                unavailable += 1;
                 continue;
             }
             let root = std::env::temp_dir()
@@ -6894,7 +6926,14 @@ mod tests {
                 match execute_runtime_adapter(&root, &request, 10_000, 64_000) {
                     Ok(result) => result,
                     Err(error) if error.contains("local defense refused") => {
-                        assert!(!strict, "{adapter} sandbox certification failed: {error}");
+                        assert!(
+                            !require_sandbox,
+                            "{adapter} sandbox certification failed: {error}"
+                        );
+                        refused += 1;
+                        eprintln!(
+                            "{language} tool is available; hosted OS isolation was refused safely: {error}"
+                        );
                         let _ = fs::remove_dir_all(root);
                         continue;
                     }
@@ -6927,16 +6966,26 @@ mod tests {
                 !outcome.child_processes.is_empty(),
                 "{adapter} process observation is empty"
             );
-            if strict {
-                assert_eq!(
-                    outcome.sandbox_status, "enforced",
-                    "{adapter} did not run inside a certified OS sandbox: {}",
-                    outcome.sandbox_evidence
-                );
-            }
+            assert_eq!(
+                outcome.sandbox_status, "enforced",
+                "{adapter} did not run inside a certified OS sandbox: {}",
+                outcome.sandbox_evidence
+            );
+            executed += 1;
             #[cfg(target_os = "macos")]
             assert!(["enforced", "unavailable"].contains(&outcome.sandbox_status.as_str()));
             let _ = fs::remove_dir_all(root);
+        }
+        assert_eq!(
+            executed + refused + unavailable,
+            cases.len(),
+            "every language adapter must execute in isolation, fail closed, or report a missing tool"
+        );
+        if refused > 0 {
+            assert_eq!(
+                executed, 0,
+                "a host must not mix certified and uncertified runtime execution"
+            );
         }
     }
 

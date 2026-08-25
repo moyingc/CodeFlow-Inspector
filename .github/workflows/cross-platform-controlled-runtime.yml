@@ -24,7 +24,7 @@ permissions:
 
 jobs:
   runtime-certification:
-    name: ${{ matrix.os }} six-language runtime
+    name: ${{ matrix.os }} runtime compatibility and isolation gate
     strategy:
       fail-fast: false
       matrix:
@@ -72,7 +72,7 @@ jobs:
         working-directory: src-tauri
         run: "cargo test --locked runtime_build:: --lib -- --test-threads=1"
 
-      - name: Certify macOS and Linux six-language execution
+      - name: Verify six-language tools and certified-or-fail-closed execution
         if: runner.os != 'Windows'
         working-directory: src-tauri
         env:
