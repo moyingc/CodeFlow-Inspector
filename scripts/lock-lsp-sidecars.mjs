@@ -4,6 +4,9 @@ import { access, chmod, mkdir, readdir, readFile, stat, unlink, writeFile } from
 import { join, relative, resolve } from "node:path";
 
 const projectRoot = resolve(import.meta.dirname, "..");
+const allowPartial =
+  process.env.CODEFLOW_SIDECAR_ALLOW_PARTIAL === "1" ||
+  process.argv.includes("--allow-partial");
 const target = process.env.CODEFLOW_TARGET_TRIPLE || hostTarget();
 const packageRoot = resolve(
   process.env.CODEFLOW_LSP_PACKAGE_ROOT ||
@@ -43,7 +46,7 @@ for (const tool of manifest.tools) {
   lockedTools.push(tool.id);
 }
 
-if (missing.length && process.env.CODEFLOW_SIDECAR_ALLOW_PARTIAL !== "1") {
+if (missing.length && !allowPartial) {
   console.error("LSP sidecar package is incomplete:");
   missing.forEach((item) => console.error(`- ${item}`));
   console.error(

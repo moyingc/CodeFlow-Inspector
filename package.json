@@ -25,7 +25,7 @@
     "desktop:lock-sidecars": "node scripts/lock-lsp-sidecars.mjs",
     "desktop:prepare-native-sidecars": "node scripts/import-local-native-sidecars.mjs",
     "desktop:prepare-runtime-sidecars": "node scripts/import-local-runtime-sidecars.mjs",
-    "desktop:lock-sidecars:partial": "CODEFLOW_SIDECAR_ALLOW_PARTIAL=1 node scripts/lock-lsp-sidecars.mjs",
+    "desktop:lock-sidecars:partial": "node scripts/lock-lsp-sidecars.mjs --allow-partial",
     "desktop:audit-sidecars": "node scripts/audit-lsp-sidecars.mjs",
     "desktop:lock-debug-sidecars": "node scripts/lock-debug-sidecars.mjs",
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.mjs",

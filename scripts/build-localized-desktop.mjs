@@ -27,7 +27,10 @@ function run(command, args, env = process.env, attempts = 1) {
   process.exit(result?.status ?? 1);
 }
 
-run("npm", ["run", "desktop:lock-sidecars:partial"]);
+run(
+  "node",
+  ["scripts/lock-lsp-sidecars.mjs", "--allow-partial"],
+);
 
 const sidecarConfig = JSON.parse(readFileSync(generatedConfigPath, "utf8"));
 const english = locale === "en-US";
@@ -69,7 +72,13 @@ writeFileSync(localeConfigPath, `${JSON.stringify(localizedConfig, null, 2)}\n`)
 if (process.platform !== "win32") {
   // Tauri refreshes existing bundles in place. Vendor archives can preserve
   // read-only bits, so normalize only local build copies before packaging.
-  run("chmod", ["-R", "u+w", resolve(tauriRoot, "lsp-sidecars"), resolve(tauriRoot, "debug-sidecars"), resolve(tauriRoot, "target/release")]);
+  for (const path of [
+    resolve(tauriRoot, "lsp-sidecars"),
+    resolve(tauriRoot, "debug-sidecars"),
+    resolve(tauriRoot, "target/release"),
+  ]) {
+    if (existsSync(path)) run("chmod", ["-R", "u+w", path]);
+  }
 }
 const bundles = process.platform === "darwin" ? "app" : process.platform === "win32" ? "nsis" : "deb,appimage";
 run(
