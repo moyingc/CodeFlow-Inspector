@@ -4086,6 +4086,12 @@ fn run_process(
         .env("NO_PROXY", "*")
         .env("HTTP_PROXY", "http://127.0.0.1:9")
         .env("HTTPS_PROXY", "http://127.0.0.1:9");
+    #[cfg(target_os = "macos")]
+    if let Some((developer_root, sdk_root)) = macos_developer_environment() {
+        process
+            .env("DEVELOPER_DIR", developer_root)
+            .env("SDKROOT", sdk_root);
+    }
     configure_unix_resource_limits(&mut process, timeout_ms, max_output_bytes)?;
     let started = Instant::now();
     let mut child = process
@@ -4399,14 +4405,10 @@ fn build_sandbox_plan(command: &str, args: &[String], cwd: &Path) -> SandboxPlan
             .filter(|path| !path.as_os_str().is_empty())
             .map(|path| escape_sandbox_literal(&path.to_string_lossy()))
             .unwrap_or_else(|| "/__codeflow_no_executable_root__".to_string());
-        let developer_root = Command::new("/usr/bin/xcode-select")
-            .arg("-p")
-            .output()
-            .ok()
-            .filter(|output| output.status.success())
-            .and_then(|output| String::from_utf8(output.stdout).ok())
-            .map(|path| escape_sandbox_literal(path.trim()))
-            .filter(|path| !path.is_empty())
+        let developer_root = macos_developer_environment()
+            .map(|(developer_root, _)| developer_root)
+            .and_then(|path| path.parent().map(Path::to_path_buf))
+            .map(|path| escape_sandbox_literal(&path.to_string_lossy()))
             .unwrap_or_else(|| "/__codeflow_no_developer_root__".to_string());
         let user_text_encoding = std::env::var_os("HOME")
             .map(PathBuf::from)
@@ -4530,6 +4532,28 @@ fn macos_sandbox_available() -> bool {
         .status()
         .map(|status| status.success())
         .unwrap_or(false)
+}
+
+#[cfg(target_os = "macos")]
+fn macos_developer_environment() -> Option<(PathBuf, PathBuf)> {
+    let developer_root = Command::new("/usr/bin/xcode-select")
+        .arg("-p")
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .and_then(|output| String::from_utf8(output.stdout).ok())
+        .map(|path| PathBuf::from(path.trim()))
+        .filter(|path| path.is_absolute() && path.is_dir())?;
+    let sdk_root = Command::new("/usr/bin/xcrun")
+        .args(["--sdk", "macosx", "--show-sdk-path"])
+        .env("DEVELOPER_DIR", &developer_root)
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .and_then(|output| String::from_utf8(output.stdout).ok())
+        .map(|path| PathBuf::from(path.trim()))
+        .filter(|path| path.is_absolute() && path.is_dir())?;
+    Some((developer_root, sdk_root))
 }
 
 #[cfg(target_os = "linux")]
