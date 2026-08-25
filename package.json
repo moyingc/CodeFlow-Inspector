@@ -30,10 +30,11 @@
     "desktop:lock-debug-sidecars": "node scripts/lock-debug-sidecars.mjs",
     "test": "npm run build && node --test --test-concurrency=1 tests/*.test.mjs",
     "lint": "eslint . --ignore-pattern dist --ignore-pattern dist-desktop --ignore-pattern .next --ignore-pattern src-tauri/target --ignore-pattern src-tauri/lsp-sidecars",
-    "verify:integrity": "npm run lint && npm test",
+    "verify:integrity": "npm run docs:check-bilingual && npm run lint && npm test",
     "audit:core-v1": "node scripts/core-v1-acceptance.mjs",
     "verify:core-v1": "node scripts/core-v1-acceptance.mjs --run",
-    "db:generate": "drizzle-kit generate"
+    "db:generate": "drizzle-kit generate",
+    "docs:check-bilingual": "node scripts/check-bilingual-docs.mjs"
   },
   "dependencies": {
     "drizzle-orm": "0.45.2",

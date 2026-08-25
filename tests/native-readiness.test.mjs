@@ -23,7 +23,11 @@ test("native desktop readiness keeps current CodeFlow pillars intact", async () 
   ]);
   const scripts = JSON.parse(packageJson).scripts;
 
-  assert.equal(scripts["verify:integrity"], "npm run lint && npm test");
+  assert.equal(
+    scripts["verify:integrity"],
+    "npm run docs:check-bilingual && npm run lint && npm test",
+  );
+  assert.equal(scripts["docs:check-bilingual"], "node scripts/check-bilingual-docs.mjs");
   assert.equal(scripts["desktop:dev"], "tauri dev");
   assert.equal(scripts["desktop:build"], "tauri build");
   assert.match(packageJson, /"sql\.js"/);

@@ -12,6 +12,8 @@ Local-first desktop software for code understanding, semantic graphs, data-flow 
 - [English user guide](docs/User-Guide.md)
 - [产品理念与技术介绍](docs/产品理念与技术介绍.md)
 - [Product vision and technology](docs/Product-Vision-and-Technology.md)
+- [中文文档索引](docs/文档索引.md)
+- [English documentation index](docs/Documentation-Index.md)
 
 > Status: Alpha / Research Preview. Use sanitized, non-confidential projects for evaluation.
 

@@ -1,5 +1,7 @@
 # Third-party notices
 
+[中文](THIRD_PARTY_NOTICES.zh-CN.md)
+
 CodeFlow Inspector uses open-source libraries and can integrate with optional
 language and debug sidecars. This repository does not commit locally installed
 sidecar binaries. Release packaging must fetch or prepare them from their

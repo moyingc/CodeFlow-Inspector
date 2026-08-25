@@ -1,5 +1,7 @@
 # CodeFlow 测试软件接口文档
 
+[English](CodeFlow-Test-Software-API.md)
+
 ## 1. 文档范围
 
 本文档描述 CodeFlow 本地桌面软件自身的测试接口。它不是公网 HTTP API 文档，也不是要求被测项目提供接口文档。

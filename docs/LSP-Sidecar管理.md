@@ -1,5 +1,7 @@
 # LSP Sidecar 管理
 
+[English](LSP-Sidecar-Management.md)
+
 ## 目标
 
 桌面程序不再只依赖终端的 `PATH`。LSP 工具按以下优先级解析：

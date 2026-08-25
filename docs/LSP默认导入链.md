@@ -1,5 +1,7 @@
 # LSP 默认导入链
 
+[English](LSP-Default-Import-Chain.md)
+
 桌面程序导入项目时使用以下固定顺序：
 
 1. Tree-sitter 按语言 grammar 确认文件结构、函数边界、参数、调用和宏候选位置。

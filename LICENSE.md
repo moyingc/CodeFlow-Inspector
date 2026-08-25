@@ -1,5 +1,7 @@
 # PolyForm Noncommercial License 1.0.0
 
+[非官方中文参考译文](LICENSE.zh-CN.md)
+
 https://polyformproject.org/licenses/noncommercial/1.0.0
 
 ## Acceptance

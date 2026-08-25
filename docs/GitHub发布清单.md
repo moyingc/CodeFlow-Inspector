@@ -1,5 +1,7 @@
 # GitHub 发布清单
 
+[English](GitHub-Release-Checklist.md)
+
 ## 公开定位
 
 当前版本以 Alpha / Research Preview 发布，用于非机密项目试用、可复现问题和社区反馈。不宣称为生产级安全证明器。

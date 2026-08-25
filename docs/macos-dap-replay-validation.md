@@ -1,5 +1,7 @@
 # macOS DAP Sidecar Replay Validation
 
+[中文](macos-dap-replay-validation.zh-CN.md)
+
 Date: 2026-08-08
 Target: aarch64-apple-darwin
 

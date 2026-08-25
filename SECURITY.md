@@ -1,5 +1,7 @@
 # Security Policy
 
+[中文](SECURITY.zh-CN.md)
+
 ## Reporting a vulnerability
 
 Do not open a public issue for vulnerabilities that could expose source code, local files, credentials, sandbox escapes, adapter signature bypasses, or network-policy bypasses. After the repository is published, use GitHub Private Vulnerability Reporting under **Security > Advisories > New draft advisory**.

@@ -1,5 +1,7 @@
 ## What changed
 
+[中文模板](PULL_REQUEST_TEMPLATE.zh-CN.md)
+
 ## Evidence
 
 - [ ] `npm run lint`

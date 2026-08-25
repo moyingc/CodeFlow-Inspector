@@ -1,5 +1,7 @@
 # Contributing to CodeFlow Inspector
 
+[中文](CONTRIBUTING.zh-CN.md)
+
 CodeFlow Inspector is a local-first desktop code-analysis system. Contributions must preserve the separation between semantic facts, visual presentation, deterministic knowledge, learned ranking, controlled execution, and formal proof.
 
 ## Before opening a pull request
