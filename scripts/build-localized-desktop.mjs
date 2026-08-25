@@ -22,6 +22,9 @@ function run(command, args, env = process.env, attempts = 1) {
   for (let attempt = 1; attempt <= attempts; attempt += 1) {
     result = spawnSync(command, args, { cwd: root, env, stdio: "inherit" });
     if (result.status === 0) return;
+    if (result.error) {
+      console.error(`Failed to start ${command}: ${result.error.message}`);
+    }
     if (attempt < attempts) Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 1500);
   }
   process.exit(result?.status ?? 1);
@@ -82,8 +85,8 @@ if (process.platform !== "win32") {
 }
 const bundles = process.platform === "darwin" ? "app" : process.platform === "win32" ? "nsis" : "deb,appimage";
 run(
-  resolve(root, "node_modules/.bin/tauri"),
-  ["build", "--bundles", bundles, "--config", localeConfigPath],
+  process.execPath,
+  [resolve(root, "node_modules/@tauri-apps/cli/tauri.js"), "build", "--bundles", bundles, "--config", localeConfigPath],
   { ...process.env, NEXT_PUBLIC_CODEFLOW_LOCALE: locale, VITE_CODEFLOW_LOCALE: locale },
 );
 
