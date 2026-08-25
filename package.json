@@ -2,6 +2,19 @@
   "name": "code-function-visualizer",
   "version": "0.1.0",
   "private": true,
+  "description": "Local-first program analysis and code visualization desktop software with data-flow, security, digital-twin, and verification workflows.",
+  "keywords": [
+    "program-analysis",
+    "code-visualization",
+    "static-analysis",
+    "data-flow-analysis",
+    "control-flow-analysis",
+    "software-security",
+    "digital-twin",
+    "program-verification",
+    "tauri",
+    "local-first"
+  ],
   "license": "PolyForm-Noncommercial-1.0.0",
   "engines": {
     "node": ">=22.13.0"

@@ -2,11 +2,14 @@
 
 [中文](README.zh-CN.md) | [Home](README.md)
 
-CodeFlow Inspector is a local-first desktop application that turns source projects into structured semantic evidence. It helps users understand software behavior, call relationships, data paths, runtime requirements, performance, stability, and security boundaries.
+CodeFlow Inspector is a local-first **program analysis and code visualization desktop application**. It combines static analysis, control-flow and data-flow analysis, software-security review, controlled runtime experiments, program verification, and a software digital twin to turn source projects into structured semantic evidence.
 
+- [Download the latest desktop release](https://github.com/moyingc/CodeFlow-Inspector/releases/latest)
 - [Detailed user guide](docs/User-Guide.md)
 - [Product vision and technology](docs/Product-Vision-and-Technology.md)
 - [Language tool installation guide](docs/Language-Tool-Installation.md)
+
+It is designed for codebase understanding, source-to-sink tracing, architecture discovery, dependency and environment diagnosis, performance modeling, security analysis, and evidence-gated repair experiments without uploading the analyzed repository to a remote model API.
 
 ## Status
 
