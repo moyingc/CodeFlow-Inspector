@@ -4,6 +4,10 @@
 
 CodeFlow Inspector is a local-first desktop application that turns source projects into structured semantic evidence. It helps users understand software behavior, call relationships, data paths, runtime requirements, performance, stability, and security boundaries.
 
+- [Detailed user guide](docs/User-Guide.md)
+- [Product vision and technology](docs/Product-Vision-and-Technology.md)
+- [Language tool installation guide](docs/Language-Tool-Installation.md)
+
 ## Status
 
 The current release is an **Alpha / Research Preview** intended for sanitized, non-confidential projects and reproducible feedback. Candidate findings, statistical estimates, Compiler/LSP evidence, controlled-runtime evidence, and formal proof are kept at distinct evidence grades. Unverified inferences are not presented as established facts.
