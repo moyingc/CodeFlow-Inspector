@@ -1,0 +1,38 @@
+{
+  "id": "codeflow-core-v1",
+  "scope": "non-water-core",
+  "version": 1,
+  "excludes": [
+    "water-map-layout-and-visual-language",
+    "longitudinal-deepweb-training-volume",
+    "macos-notarization",
+    "linux-windows-release-certification"
+  ],
+  "gates": [
+    { "id": "workspace", "label": "桌面多项目与 SQLite", "weight": 11, "files": ["src/lib/workspace/project-store.ts", "src/lib/persistence/native-sqlite-writer.ts", "tests/workspace-project-experience.test.mjs"] },
+    { "id": "parser", "label": "全语言 AST/Compiler/LSP 主链", "weight": 16, "files": ["src/lib/parser/native-ast-parser.ts", "src/lib/parser/native-lsp-parser.ts", "tests/full-language-v1.test.mjs"] },
+    { "id": "runtime", "label": "六语言受控运行与调试", "weight": 13, "files": ["src/lib/runtime/controlled-runtime.ts", "src-tauri/src/debug/client.rs", "tests/runtime-certification.test.mjs"] },
+    { "id": "desktop-local", "label": "Tauri 本地封装与默认断网", "weight": 2, "files": ["src-tauri/tauri.conf.json", "src-tauri/src/lib.rs", "src-tauri/src/network_policy.rs"], "markers": ["frontendDist", "connect-src 'none'", "codeflow_load_workspace_projects", "NetworkPolicyState"] },
+    { "id": "explanation", "label": "技术与功能解读", "weight": 8, "files": ["src/lib/explanation/software-explanation.ts", "tests/software-explanation-v1.test.mjs"] },
+    { "id": "knowledge", "label": "本地知识包供应链", "weight": 10, "files": ["src-tauri/src/knowledge_pack.rs", "tests/native-readiness.test.mjs"] },
+    { "id": "deepweb", "label": "DeepWeb 可训练内核与门禁", "weight": 10, "files": ["src/lib/library/deepweb-neural-database.ts", "tests/deepweb-trainable-head.test.mjs"] },
+    { "id": "security-protocol", "label": "五框架进程内协议攻击编排", "weight": 5, "files": ["src/lib/security/protocol-experiment.ts", "tests/protocol-experiment.test.mjs"], "markers": ["fastapi-test-client", "supertest", "django-test-client", "flask-test-client", "spring-mockmvc"] },
+    { "id": "context-heap", "label": "上下文堆与复杂别名", "weight": 2, "files": ["src/lib/verification/whole-program-memory.ts"], "markers": ["contextHeapStates", "containerElementPointsTo", "dynamicDispatchTargets"] },
+    { "id": "event-concurrency", "label": "事件级并发与同步语义", "weight": 2, "files": ["src/lib/verification/concurrency-state-space.ts"], "markers": ["synchronizationEdges", "lockset", "atomicOrder"] },
+    { "id": "dynamic-boundaries", "label": "四语言动态边界探针", "weight": 1, "files": ["src/lib/runtime/auto-instrumentation.ts", "src/lib/security/dynamic-boundary-analysis.ts"], "markers": ["java-reflection", "native-ffi", "rust-dynamic", "cpp-dynamic"] },
+    { "id": "digital-twin", "label": "数字孪生真实实验", "weight": 8, "files": ["src/lib/twin/program-digital-twin.ts", "tests/digital-twin-evidence.test.mjs"] },
+    { "id": "verification-repair", "label": "形式化验证与修复闭环", "weight": 10, "files": ["src/lib/verification/project-contracts.ts", "src/lib/repair/candidate-diff.ts", "tests/repair-workflow.test.mjs"] },
+    { "id": "scale-benchmark", "label": "大型工程性能基准", "weight": 1, "files": ["scripts/core-scale-benchmark.mjs", "tests/core-scale-budget.test.mjs"] },
+    { "id": "automated-acceptance", "label": "自动验收与证据报告", "weight": 1, "files": ["scripts/core-v1-acceptance.mjs", "docs/core-v1-acceptance-manifest.json"] }
+  ],
+  "maturityGates": {
+    "minimumRealProjects": 60,
+    "minimumFrameworks": 8,
+    "minimumReplayDays": 30,
+    "minimumReplayPerCase": 3,
+    "minimumConclusiveRate": 95,
+    "minimumParserRecall": 98,
+    "minimumCallEdgePrecision": 95,
+    "maximumTraceLossRate": 1
+  }
+}

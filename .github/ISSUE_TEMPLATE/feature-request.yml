@@ -1,0 +1,31 @@
+name: Feature request
+description: Propose an analysis capability, language adapter, workflow, or usability improvement.
+title: "[Feature] "
+labels: ["enhancement", "needs-triage"]
+body:
+  - type: textarea
+    id: problem
+    attributes:
+      label: Problem to solve
+      description: Describe the user decision or workflow that is currently difficult.
+    validations:
+      required: true
+  - type: textarea
+    id: proposal
+    attributes:
+      label: Proposed behavior
+      description: Explain inputs, outputs, evidence requirements, and local/offline expectations.
+    validations:
+      required: true
+  - type: dropdown
+    id: evidence
+    attributes:
+      label: Required evidence level
+      options:
+        - Deterministic static evidence
+        - Compiler/LSP evidence
+        - Controlled runtime evidence
+        - Formal proof or counterexample
+        - User-interface only
+    validations:
+      required: true

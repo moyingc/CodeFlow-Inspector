@@ -1,0 +1,56 @@
+name: Bug report
+description: Report a reproducible analysis, desktop, graph, runtime, or export problem.
+title: "[Bug] "
+labels: ["bug", "needs-triage"]
+body:
+  - type: dropdown
+    id: area
+    attributes:
+      label: Affected area
+      options:
+        - Project import and storage
+        - Parsing and language services
+        - Function/data-flow graph
+        - Runtime, debugging, or digital twin
+        - Security or verification
+        - Knowledge and extension packages
+        - PDF report
+        - Desktop installer or update
+    validations:
+      required: true
+  - type: input
+    id: version
+    attributes:
+      label: Version and operating system
+      placeholder: "0.1.0, macOS 15.6 arm64"
+    validations:
+      required: true
+  - type: textarea
+    id: steps
+    attributes:
+      label: Reproduction steps
+      description: Do not attach proprietary source code, credentials, database files, or private runtime output.
+      placeholder: |
+        1. Import ...
+        2. Open ...
+        3. Click ...
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: Expected and actual behavior
+    validations:
+      required: true
+  - type: textarea
+    id: evidence
+    attributes:
+      label: Sanitized evidence
+      description: Add screenshots, error text, evidence grade, and a minimal sample project when possible.
+  - type: checkboxes
+    id: privacy
+    attributes:
+      label: Privacy confirmation
+      options:
+        - label: I removed source code, tokens, personal data, private paths, and confidential runtime output.
+          required: true

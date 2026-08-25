@@ -1,0 +1,83 @@
+# See https://help.github.com/articles/ignoring-files/ for more about ignoring files.
+
+# dependencies
+/node_modules
+/.pnp
+.pnp.*
+.yarn/*
+!.yarn/patches
+!.yarn/plugins
+!.yarn/releases
+!.yarn/versions
+
+# testing
+/coverage
+
+# next.js
+/.next/
+/.vinext/
+/out/
+
+# misc
+.DS_Store
+*.pem
+
+# debug
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+.pnpm-debug.log*
+
+# env files (can opt-in for committing if needed)
+.env*
+
+# vercel
+.vercel
+
+# typescript
+next-env.d.ts
+*.tsbuildinfo
+/dist/
+/dist-desktop/
+/.wrangler/
+/.openai/*
+!/.openai/hosting.json
+/build/*
+!/build/sites-vite-plugin.ts
+/outputs/
+/work/
+/tmp/
+
+# native desktop build output and generated local packaging configs
+/src-tauri/target/
+/src-tauri/gen/
+/src-tauri/tauri.*.generated.json
+
+# locally installed platform sidecars are rebuilt from manifests and checksums
+/src-tauri/lsp-sidecars/*/
+/src-tauri/debug-sidecars/*/
+
+# local review material and packaged installers
+/优化建议整理.pdf
+/*.pdf
+*.dmg
+*.AppImage
+*.appimage
+*.msi
+*.exe
+
+# private development journals; keep public specifications and test fixtures
+/docs/notion/
+/docs/*审计*.md
+!/docs/GitHub公开预览审计-2026-08-25.md
+/docs/*验收*.md
+/docs/*封存*.md
+!/docs/知识包第一阶段封存记录.md
+/docs/当前功能完成度审计.md
+/docs/开发存储清理记录.md
+/docs/深度开发执行记录.md
+/docs/用户反馈优化记录-2026-08-13.md
+/docs/方案分析.md
+/docs/设计初衷符合度与证据审计.md
+/docs/设计目标与能力缺口.md
+/docs/桌面发行修复记录-2026-08-13.md

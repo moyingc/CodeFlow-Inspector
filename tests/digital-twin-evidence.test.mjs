@@ -1,0 +1,106 @@
+import assert from "node:assert/strict";
+import test from "node:test";
+
+import { buildProgramDigitalTwin } from "../src/lib/twin/program-digital-twin.ts";
+
+test("ordinary runtime evidence does not promote stress or attack simulations", () => {
+  const runtime = {
+    id: "runtime-1",
+    projectId: "project-1",
+    projectName: "Fixture",
+    adapter: "node",
+    status: "passed",
+    evidenceGrade: "真实执行",
+    entryPath: "main.js",
+    commandLabel: "node main.js",
+    exitCode: 0,
+    timedOut: false,
+    durationMs: 12,
+    stdout: "ok",
+    stderr: "",
+    stdoutTruncated: false,
+    stderrTruncated: false,
+    compileOutput: "",
+    fileCount: 1,
+    totalBytes: 20,
+    startedAt: 1,
+    finishedAt: 2,
+    databasePath: "fixture.sqlite3",
+    sandboxKind: "process_boundary",
+    sandboxStatus: "partial",
+    sandboxEvidence: "fixture",
+    cpuTimeMs: 2,
+    peakMemoryBytes: 1024,
+    childProcessCount: 0,
+    childProcesses: [],
+    fileChanges: [],
+    isolation: [],
+    evidence: ["ordinary execution"],
+  };
+  const report = buildProgramDigitalTwin({
+    files: [{ id: "file-1", name: "main.js", language: "JavaScript", content: "function main() {}" }],
+    functions: [{
+      id: "fn-1",
+      name: "main",
+      fileId: "file-1",
+      fileName: "main.js",
+      language: "JavaScript",
+      startLine: 1,
+      endLine: 1,
+      params: [],
+      returnType: "void",
+      outputs: ["void"],
+      calls: [],
+      summary: "fixture",
+      dataShape: "(void) -> void",
+      complexity: 1,
+      category: "业务",
+      body: "function main() {}",
+      sideEffects: [],
+      externalInputs: [],
+      validations: [],
+      risks: [],
+      source: "Parser Fact",
+      confidence: 95,
+      parser: "fixture",
+      parseEvidence: ["fixture"],
+    }],
+    flowNodes: [{
+      id: "node-1",
+      functionId: "fn-1",
+      name: "main",
+      role: "排水口",
+      status: "Closed",
+      note: "fixture",
+      capacity: "小溪",
+      confidence: 95,
+      upstreamIds: [],
+      downstreamIds: [],
+    }],
+    flowEdges: [],
+    issues: [],
+    runtimeSandbox: {
+      mode: "Static Dry-run",
+      readinessScore: 70,
+      deterministicScore: 80,
+      breakpointCount: 0,
+      riskCount: 0,
+      estimatedSteps: 1,
+      resourceBudget: { maxSteps: 1200, maxBranchFanout: 8, timeoutMs: 2500, memoryMb: 128 },
+      scenarios: [],
+      guards: [],
+      next: [],
+    },
+    speedOptions: [],
+    environmentScore: 80,
+    closureScore: 90,
+    damScore: 90,
+    runtimeExecutions: [runtime],
+  });
+
+  const byKind = new Map(report.experiments.map((experiment) => [experiment.kind, experiment]));
+  assert.equal(byKind.get("动态仿真").evidenceGrade, "真实执行");
+  assert.equal(byKind.get("压力测试").evidenceGrade, "模型仿真");
+  assert.equal(byKind.get("安全攻击").evidenceGrade, "模型仿真");
+  assert.equal(report.executedExperimentCount, 1);
+});

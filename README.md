@@ -1,0 +1,14 @@
+# CodeFlow Inspector
+
+Local-first desktop software for code understanding, semantic graphs, data-flow analysis, controlled execution, verification, security review, and repair experiments.
+
+本地优先的桌面代码分析软件，用于代码理解、语义图谱、数据流分析、受控执行、程序验证、安全检查和修复实验。
+
+- [中文说明](README.zh-CN.md)
+- [English documentation](README.en-US.md)
+
+> Status: Alpha / Research Preview. Use sanitized, non-confidential projects for evaluation.
+
+## License
+
+Source-available under the [PolyForm Noncommercial License 1.0.0](LICENSE.md). Commercial use is not permitted without a separate license.

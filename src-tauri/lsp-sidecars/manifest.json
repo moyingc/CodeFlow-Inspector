@@ -1,0 +1,113 @@
+{
+  "schemaVersion": 1,
+  "tools": [
+    {
+      "id": "pyright",
+      "label": "Pyright",
+      "command": "pyright-langserver",
+      "languages": ["Python"],
+      "packageKind": "node-runtime-package",
+      "versionPolicy": "build-lock",
+      "licenseSource": "https://github.com/microsoft/pyright"
+    },
+    {
+      "id": "jdtls",
+      "label": "Eclipse JDT LS",
+      "command": "jdtls",
+      "languages": ["Java"],
+      "packageKind": "jvm-runtime-package",
+      "versionPolicy": "build-lock",
+      "licenseSource": "https://github.com/eclipse-jdtls/eclipse.jdt.ls"
+    },
+    {
+      "id": "gopls",
+      "label": "gopls",
+      "command": "gopls",
+      "languages": ["Go"],
+      "packageKind": "native-binary",
+      "versionPolicy": "build-lock",
+      "licenseSource": "https://go.googlesource.com/tools"
+    },
+    {
+      "id": "rust-analyzer",
+      "label": "rust-analyzer",
+      "command": "rust-analyzer",
+      "languages": ["Rust"],
+      "packageKind": "native-binary",
+      "versionPolicy": "build-lock",
+      "licenseSource": "https://github.com/rust-lang/rust-analyzer"
+    },
+    {
+      "id": "clangd",
+      "label": "clangd",
+      "command": "clangd",
+      "languages": ["C", "C++"],
+      "packageKind": "native-binary",
+      "versionPolicy": "build-lock",
+      "licenseSource": "https://github.com/llvm/llvm-project"
+    },
+    {
+      "id": "kotlin-language-server",
+      "label": "Kotlin Language Server",
+      "command": "kotlin-language-server",
+      "languages": ["Kotlin"],
+      "packageKind": "managed-jvm-tool",
+      "versionPolicy": "managed-or-system",
+      "licenseSource": "https://github.com/fwcd/kotlin-language-server"
+    },
+    {
+      "id": "csharp-ls",
+      "label": "C# Language Server",
+      "command": "csharp-ls",
+      "languages": ["C#"],
+      "packageKind": "managed-dotnet-tool",
+      "versionPolicy": "managed-or-system",
+      "licenseSource": "https://github.com/razzmatazz/csharp-language-server"
+    },
+    {
+      "id": "phpantom-lsp",
+      "label": "PHPantom LSP",
+      "command": "phpantom_lsp",
+      "languages": ["PHP"],
+      "packageKind": "managed-native-tool",
+      "versionPolicy": "managed-or-system",
+      "licenseSource": "https://github.com/PHPantom-dev/phpantom_lsp"
+    },
+    {
+      "id": "ruby-lsp",
+      "label": "Ruby LSP",
+      "command": "ruby-lsp",
+      "languages": ["Ruby"],
+      "packageKind": "managed-ruby-tool",
+      "versionPolicy": "managed-or-system",
+      "licenseSource": "https://github.com/Shopify/ruby-lsp"
+    },
+    {
+      "id": "sourcekit-lsp",
+      "label": "SourceKit-LSP",
+      "command": "sourcekit-lsp",
+      "languages": ["Swift"],
+      "packageKind": "system-sdk-tool",
+      "versionPolicy": "system-sdk",
+      "licenseSource": "https://github.com/swiftlang/sourcekit-lsp"
+    },
+    {
+      "id": "bash-language-server",
+      "label": "Bash Language Server",
+      "command": "bash-language-server",
+      "languages": ["Shell"],
+      "packageKind": "managed-node-tool",
+      "versionPolicy": "managed-or-system",
+      "licenseSource": "https://github.com/bash-lsp/bash-language-server"
+    },
+    {
+      "id": "sql-language-server",
+      "label": "SQL Language Server",
+      "command": "sql-language-server",
+      "languages": ["SQL"],
+      "packageKind": "managed-node-tool",
+      "versionPolicy": "managed-or-system",
+      "licenseSource": "https://github.com/joe-re/sql-language-server"
+    }
+  ]
+}

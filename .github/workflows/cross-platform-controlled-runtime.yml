@@ -1,0 +1,126 @@
+name: Cross-platform controlled runtime
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+    tags:
+      - "v*"
+    paths:
+      - "app/**"
+      - "src/**"
+      - "src-tauri/**"
+      - "scripts/**"
+      - "tests/**"
+      - "package.json"
+      - "package-lock.json"
+      - "vite.desktop.config.ts"
+      - ".github/workflows/cross-platform-controlled-runtime.yml"
+
+permissions:
+  contents: read
+
+jobs:
+  runtime-certification:
+    name: ${{ matrix.os }} six-language runtime
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, ubuntu-24.04, windows-2025]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+      - uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+      - uses: dtolnay/rust-toolchain@stable
+
+      - name: Install Linux desktop and sandbox dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y bubblewrap build-essential cmake maven gradle libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+
+      - name: Install macOS build dependencies
+        if: runner.os == 'macOS'
+        run: brew install cmake llvm
+
+      - name: Install Windows build dependencies
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: choco install llvm cmake maven gradle --yes --no-progress
+
+      - name: Install frontend dependencies
+        run: npm ci
+
+      - name: Verify Rust desktop source
+        working-directory: src-tauri
+        run: cargo check --locked
+
+      - name: Verify project build planners
+        working-directory: src-tauri
+        run: "cargo test --locked runtime_build:: --lib -- --test-threads=1"
+
+      - name: Certify macOS and Linux six-language execution
+        if: runner.os != 'Windows'
+        working-directory: src-tauri
+        env:
+          CODEFLOW_CROSS_PLATFORM_CERTIFY: "1"
+        run: "cargo test --locked tests::controlled_runtime_smoke_tests_every_available_language_adapter --lib -- --exact --nocapture --test-threads=1"
+
+      - name: Build Windows desktop helper
+        if: runner.os == 'Windows'
+        working-directory: src-tauri
+        run: cargo build --locked --bin codeflow-inspector
+
+      - name: Certify Windows AppContainer network denial
+        if: runner.os == 'Windows'
+        shell: pwsh
+        run: .\src-tauri\target\debug\codeflow-inspector.exe --codeflow-appcontainer-self-test
+
+      - name: Verify frontend runtime evidence gates
+        run: node --test tests/runtime-certification.test.mjs
+
+  desktop-bundle:
+    name: ${{ matrix.os }} ${{ matrix.locale }} desktop bundle
+    needs: runtime-certification
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-14, ubuntu-24.04, windows-2025]
+        locale: [zh-CN, en-US]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+      - uses: dtolnay/rust-toolchain@stable
+      - name: Install Linux desktop dependencies
+        if: runner.os == 'Linux'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libayatana-appindicator3-dev librsvg2-dev patchelf
+      - run: npm ci
+      - name: Build localized native desktop installer
+        run: npm run desktop:build:localized -- ${{ matrix.locale }}
+      - name: Write release checksums
+        run: npm run desktop:checksums
+      - uses: actions/upload-artifact@v4
+        with:
+          name: codeflow-${{ matrix.os }}-${{ matrix.locale }}
+          path: src-tauri/target/release/bundle/**
+          if-no-files-found: error

@@ -1,0 +1,59 @@
+[package]
+name = "codeflow-inspector"
+version = "0.1.0"
+description = "Local desktop shell for CodeFlow Inspector"
+authors = ["CodeFlow Inspector"]
+edition = "2021"
+
+[lib]
+name = "codeflow_inspector_lib"
+crate-type = ["staticlib", "cdylib", "rlib"]
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+chrono = { version = "0.4", default-features = false, features = ["clock"] }
+getrandom = "0.3"
+quick-xml = "0.38"
+reqwest = { version = "0.13.4", features = ["blocking", "json", "native-tls", "query"] }
+rfd = "0.15"
+rusqlite = { version = "0.32", features = ["bundled"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+semver = "1"
+sha2 = "0.10"
+sysinfo = "0.39"
+tauri = { version = "2", features = [] }
+tree-sitter = "0.26"
+tree-sitter-bash = "0.25"
+tree-sitter-c = "0.24"
+tree-sitter-c-sharp = "0.23"
+tree-sitter-cpp = "0.23"
+tree-sitter-go = "0.25"
+tree-sitter-java = "0.23"
+tree-sitter-javascript = "0.25"
+tree-sitter-kotlin-sqry = "19.0"
+tree-sitter-php = "0.24"
+tree-sitter-python = "0.25"
+tree-sitter-ruby = "0.23"
+tree-sitter-rust = "0.24"
+tree-sitter-sequel = "0.3"
+tree-sitter-swift = "0.7"
+tree-sitter-typescript = "0.23"
+url = "2"
+zip = { version = "2.4", default-features = false, features = ["deflate"] }
+
+[target.'cfg(unix)'.dependencies]
+libc = "0.2"
+
+[target.'cfg(windows)'.dependencies]
+windows-sys = { version = "0.59", features = [
+  "Win32_Foundation",
+  "Win32_Security_Authorization",
+  "Win32_Security_Isolation",
+  "Win32_System_Console",
+  "Win32_System_JobObjects",
+  "Win32_System_Threading",
+  "Win32_Security",
+] }

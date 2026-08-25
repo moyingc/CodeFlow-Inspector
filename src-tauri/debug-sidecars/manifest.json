@@ -1,0 +1,155 @@
+{
+  "schemaVersion": 1,
+  "profiles": [
+    {
+      "id": "vscode-js-debug",
+      "label": "VS Code JavaScript Debugger",
+      "languages": [
+        "TypeScript",
+        "JavaScript"
+      ],
+      "transport": "tcp-server",
+      "executableCandidates": [
+        "node"
+      ],
+      "probeArguments": [
+        "--version"
+      ],
+      "launchArguments": [
+        "${entrypoint}",
+        "0",
+        "127.0.0.1"
+      ],
+      "package": {
+        "packageKind": "managed-node-package",
+        "version": "1.102.0",
+        "versionPolicy": "exact-build-lock",
+        "source": "https://github.com/microsoft/vscode-js-debug",
+        "entrypoint": "vscode-js-debug/src/dapDebugServer.js",
+        "checksumAlgorithm": "sha256",
+        "checksumRequired": true,
+        "checksums": {
+          "aarch64-apple-darwin": "c6e0ef40c738832639724542b8d642ffd0c6149de8322b6b3d9b65cf7dbdf99b"
+        }
+      },
+      "license": {
+        "spdx": "MIT",
+        "name": "MIT License",
+        "source": "https://github.com/microsoft/vscode-js-debug/blob/main/LICENSE.txt",
+        "noticeRequired": true
+      }
+    },
+    {
+      "id": "debugpy",
+      "label": "debugpy",
+      "languages": [
+        "Python"
+      ],
+      "transport": "stdio",
+      "executableCandidates": [
+        "python3",
+        "python"
+      ],
+      "probeArguments": [
+        "-c",
+        "import debugpy; print(debugpy.__version__)"
+      ],
+      "launchArguments": [
+        "-m",
+        "debugpy.adapter"
+      ],
+      "package": {
+        "packageKind": "managed-python-package",
+        "version": "1.8.16",
+        "versionPolicy": "exact-build-lock",
+        "source": "https://github.com/microsoft/debugpy",
+        "entrypoint": "debugpy/adapter",
+        "checksumAlgorithm": "sha256",
+        "checksumRequired": true,
+        "checksums": {
+          "aarch64-apple-darwin": "d644d1648015af91db268a7657fd39a936071cdbbf57dbfb6cd2408da3514db0"
+        }
+      },
+      "license": {
+        "spdx": "MIT",
+        "name": "MIT License",
+        "source": "https://github.com/microsoft/debugpy/blob/main/LICENSE",
+        "noticeRequired": true
+      }
+    },
+    {
+      "id": "java-debug-server",
+      "label": "Debugger for Java",
+      "languages": [
+        "Java"
+      ],
+      "transport": "tcp-server",
+      "executableCandidates": [
+        "java"
+      ],
+      "probeArguments": [
+        "-version"
+      ],
+      "launchArguments": [
+        "-jar",
+        "${entrypoint}",
+        "--listen",
+        "127.0.0.1:0"
+      ],
+      "package": {
+        "packageKind": "managed-jvm-package",
+        "version": "0.58.5",
+        "versionPolicy": "exact-build-lock",
+        "source": "https://github.com/microsoft/vscode-java-debug",
+        "entrypoint": "java-debug-server/com.microsoft.java.debug.plugin.jar",
+        "checksumAlgorithm": "sha256",
+        "checksumRequired": true,
+        "checksums": {
+          "aarch64-apple-darwin": "e3932df1171b5cdd201158d1f7554c1ec09afe4657996758f9cb1143c6855faf"
+        }
+      },
+      "license": {
+        "spdx": "EPL-2.0",
+        "name": "Eclipse Public License 2.0",
+        "source": "https://github.com/microsoft/java-debug/blob/main/LICENSE.txt",
+        "noticeRequired": true
+      }
+    },
+    {
+      "id": "lldb-dap",
+      "label": "LLDB DAP",
+      "languages": [
+        "Rust",
+        "C",
+        "C++"
+      ],
+      "transport": "stdio",
+      "executableCandidates": [
+        "lldb-dap",
+        "lldb-vscode"
+      ],
+      "probeArguments": [
+        "--version"
+      ],
+      "launchArguments": [],
+      "package": {
+        "packageKind": "managed-native-binary",
+        "version": "20.1.8",
+        "versionPolicy": "exact-build-lock",
+        "source": "https://github.com/llvm/llvm-project",
+        "entrypoint": "lldb-dap/bin/lldb-dap",
+        "checksumAlgorithm": "sha256",
+        "checksumRequired": true,
+        "checksums": {
+          "aarch64-apple-darwin": "6b7fe9b7c6da2580ae5ae04ed45b180a2b0fec1bea6b604a8402d0cb7a8b101d"
+        }
+      },
+      "license": {
+        "spdx": "Apache-2.0 WITH LLVM-exception",
+        "name": "Apache License 2.0 with LLVM Exceptions",
+        "source": "https://github.com/llvm/llvm-project/blob/main/LICENSE.TXT",
+        "noticeRequired": true
+      }
+    }
+  ]
+}
