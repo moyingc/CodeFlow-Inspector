@@ -3864,11 +3864,7 @@ fn execute_runtime_adapter(
         }
         "rust" => compile_then_run(
             "rustc",
-            &[
-                entry_text,
-                "-o".to_string(),
-                "codeflow-runtime-bin".to_string(),
-            ],
+            &rust_compile_args(entry_text),
             root,
             &request.args,
             &request.stdin,
@@ -3957,6 +3953,19 @@ fn execute_runtime_adapter(
             request.adapter
         )),
     }
+}
+
+fn rust_compile_args(entry: String) -> Vec<String> {
+    let mut args = vec![entry];
+    #[cfg(target_os = "macos")]
+    if let Some(linker) = macos_xcode_tool("clang") {
+        args.extend([
+            "-C".to_string(),
+            format!("linker={}", linker.to_string_lossy()),
+        ]);
+    }
+    args.extend(["-o".to_string(), "codeflow-runtime-bin".to_string()]);
+    args
 }
 
 fn native_compile_args(
@@ -4312,6 +4321,14 @@ fn resolve_runtime_command(command: &str) -> Option<PathBuf> {
             }
         }
     }
+    #[cfg(target_os = "macos")]
+    if matches!(command, "cc" | "clang") {
+        return macos_xcode_tool("clang").or(Some(candidate));
+    }
+    #[cfg(target_os = "macos")]
+    if matches!(command, "c++" | "clang++") {
+        return macos_xcode_tool("clang++").or(Some(candidate));
+    }
     Some(candidate)
 }
 
@@ -4554,6 +4571,20 @@ fn macos_developer_environment() -> Option<(PathBuf, PathBuf)> {
         .map(|path| PathBuf::from(path.trim()))
         .filter(|path| path.is_absolute() && path.is_dir())?;
     Some((developer_root, sdk_root))
+}
+
+#[cfg(target_os = "macos")]
+fn macos_xcode_tool(tool: &str) -> Option<PathBuf> {
+    let (developer_root, _) = macos_developer_environment()?;
+    Command::new("/usr/bin/xcrun")
+        .args(["--find", tool])
+        .env("DEVELOPER_DIR", developer_root)
+        .output()
+        .ok()
+        .filter(|output| output.status.success())
+        .and_then(|output| String::from_utf8(output.stdout).ok())
+        .map(|path| PathBuf::from(path.trim()))
+        .filter(|path| path.is_absolute() && path.is_file())
 }
 
 #[cfg(target_os = "linux")]
